@@ -2,6 +2,7 @@ using System;
 using System.Net.Security;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Learning.API.Testing.RestSharp.Models;
 using RestSharp;
 using Xunit;
 using Xunit.Abstractions;
@@ -35,10 +36,12 @@ namespace Learning.API.Testing.RestSharp
             var request = new RestRequest("/Product/GetProductById/1");
 
             // Perform the Get Operation
-            var response = await client.GetAsync(request);
+            var response = await client.GetAsync<Product>(request);
 
             // Assertion
             response.Should().NotBeNull();
+            response?.Name.Should().Be("Keyboard");
+
 
         }
     }

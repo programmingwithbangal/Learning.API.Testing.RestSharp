@@ -69,5 +69,36 @@ namespace Learning.API.Testing.RestSharp
             response?.Name.Should().Be("Keyboard");
             response?.Price.Should().Be(150);
         }
+
+        [Fact]
+        public async Task Product_GetProductByIdAndName_ReturnOk()
+        {
+            _testOutputHelper.WriteLine("First Test");
+
+            var options = new RestClientOptions
+            {
+                BaseUrl = new Uri("https://localhost:44330/"),
+                RemoteCertificateValidationCallback = (sender, certificate, chain, errors) => true
+            };
+
+            // Rest Client
+            var client = new RestClient(options);
+
+            // Rest Request
+            var request = new RestRequest("/Product/GetProductByIdAndName");
+            request.AddParameter("id", 1);
+            request.AddParameter("name", "Keyboard");
+
+            // Perform the Get Operation
+            var response = await client.GetAsync<Product>(request);
+
+            // Assertion
+            response.Should().NotBeNull();
+            response?.Name.Should().Be("Keyboard");
+            response?.Price.Should().Be(150);
+            response?.ProductId.Should().Be(1);
+            response?.ProductType.Should().Be(ProductType.PERIPHARALS);
+        }
+
     }
 }

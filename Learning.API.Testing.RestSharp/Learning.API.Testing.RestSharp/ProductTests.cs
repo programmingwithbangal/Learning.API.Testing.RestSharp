@@ -1,5 +1,4 @@
 using System;
-using System.Net.Security;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Learning.API.Testing.RestSharp.Models;
@@ -9,11 +8,11 @@ using Xunit.Abstractions;
 
 namespace Learning.API.Testing.RestSharp
 {
-    public class UnitTest1
+    public class ProductTests
     {
         private readonly ITestOutputHelper _testOutputHelper;
 
-        public UnitTest1(ITestOutputHelper testOutputHelper)
+        public ProductTests(ITestOutputHelper testOutputHelper)
         {
             _testOutputHelper = testOutputHelper;
         }
@@ -100,5 +99,42 @@ namespace Learning.API.Testing.RestSharp
             response?.ProductType.Should().Be(ProductType.PERIPHARALS);
         }
 
+        [Fact]
+        public async Task Product_CreateProduct_ReturnCreated()
+        {
+            _testOutputHelper.WriteLine("First Test");
+
+            var options = new RestClientOptions
+            {
+                BaseUrl = new Uri("https://localhost:44330/"),
+                RemoteCertificateValidationCallback = (sender, certificate, chain, errors) => true
+            };
+
+            // Rest Client
+            var client = new RestClient(options);
+
+            // Rest Request
+
+            var product = new Product
+            {
+                Name = "Monitor",
+                Price = 999,
+                ProductType = ProductType.MONITOR,
+                Description = "MONITOR"
+            };
+
+            var request = new RestRequest("/Product/Create");
+            request.AddJsonBody(product);
+
+            // Perform the Get Operation
+            var response = await client.PostAsync<Product>(request);
+
+            // Assertion
+            response?.ProductId.Should().BeGreaterThan(0);
+            response?.Name.Should().Be(product.Name);
+            response?.Price.Should().Be(product.Price);
+            response?.ProductType.Should().Be(product.ProductType);
+            response?.Description.Should().Be(product.Description);
+        }
     }
 }

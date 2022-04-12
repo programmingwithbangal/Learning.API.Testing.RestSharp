@@ -19,7 +19,7 @@ namespace Learning.API.Testing.RestSharp
         }
 
         [Fact]
-        public async Task Test1()
+        public async Task Product_GetProductById_ReturnOk()
         {
             _testOutputHelper.WriteLine("First Test");
 
@@ -41,8 +41,33 @@ namespace Learning.API.Testing.RestSharp
             // Assertion
             response.Should().NotBeNull();
             response?.Name.Should().Be("Keyboard");
+        }
 
+        [Fact]
+        public async Task Product_GetProductById_QuerySegment_ReturnOk()
+        {
+            _testOutputHelper.WriteLine("First Test");
 
+            var options = new RestClientOptions
+            {
+                BaseUrl = new Uri("https://localhost:44330/"),
+                RemoteCertificateValidationCallback = (sender, certificate, chain, errors) => true
+            };
+
+            // Rest Client
+            var client = new RestClient(options);
+
+            // Rest Request
+            var request = new RestRequest("/Product/GetProductById/{id}");
+            request.AddUrlSegment("id", 1);
+
+            // Perform the Get Operation
+            var response = await client.GetAsync<Product>(request);
+
+            // Assertion
+            response.Should().NotBeNull();
+            response?.Name.Should().Be("Keyboard");
+            response?.Price.Should().Be(150);
         }
     }
 }
